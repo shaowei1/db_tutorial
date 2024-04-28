@@ -10,5 +10,9 @@ clean:
 test: db
 	bundle exec rspec
 
+build_test:
+	gcc mdb.c -o mdb
+	cd gov && go test
+
 format: *.c
 	clang-format -style=Google -i *.c
