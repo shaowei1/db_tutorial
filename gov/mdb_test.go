@@ -2,13 +2,46 @@ package main
 
 import (
 	"bytes"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
 )
 
+func TestKeepsDataAfterClosingConnection(t *testing.T) {
+	setupAndTeardownDBFile()
+
+	// Run the first script
+	result1 := runScript([]string{
+		"insert 1 user1 person1@example.com",
+		".exit",
+	})
+	expected1 := []string{
+		"db > Executed.",
+		"db > ",
+	}
+	if !isEqual(result1, expected1) {
+		t.Errorf("Result1: got %v, want %v", result1, expected1)
+	}
+
+	// Run the second script
+	result2 := runScript([]string{
+		"select",
+		".exit",
+	})
+	expected2 := []string{
+		"db > (1, user1, person1@example.com)",
+		"Executed.",
+		"db > ",
+	}
+	if !isEqual(result2, expected2) {
+		t.Errorf("Result2: got %v, want %v", result2, expected2)
+	}
+}
+
 func TestNegativeIDErrorMessage(t *testing.T) {
+	setupAndTeardownDBFile()
 	script := []string{
 		"insert -1 cstack foo@bar.com",
 		"select",
@@ -72,7 +105,7 @@ func TestInsertMaxStringLength(t *testing.T) {
 
 // 测试插入和检索一行
 func TestInsertAndRetrieveRow(t *testing.T) {
-	// 准备命令列表
+	setupAndTeardownDBFile()
 	commands := []string{
 		"insert 1 user1 person1@example.com",
 		"select",
@@ -111,7 +144,8 @@ func TestTableFullErrorMessage(t *testing.T) {
 
 // 运行脚本并返回输出结果
 func runScript(commands []string) []string {
-	cmd := exec.Command("../mdb")
+	dbPath := "test.db"
+	cmd := exec.Command("../mdb", dbPath)
 
 	// 创建输入输出缓冲区
 	var out bytes.Buffer
@@ -155,4 +189,17 @@ func isEqual(a, b []string) bool {
 		}
 	}
 	return true
+}
+
+func createAndRemoveDBFile() string {
+	dbPath := "test.db"
+	os.Remove(dbPath) // 删除已存在的数据库文件
+	return dbPath
+}
+
+// 在测试函数开始前创建数据库文件，在测试结束后删除数据库文件
+func setupAndTeardownDBFile() string {
+	dbPath := createAndRemoveDBFile()
+	defer os.Remove(dbPath)
+	return dbPath
 }
