@@ -8,3 +8,29 @@ Run site locally:
 ```
 bundle exec jekyll serve
 ```
+
+## flowchart
+
+```plantuml
+@startuml
+start
+:input sql;
+:parse sql;
+switch(type)
+    case(ddl)
+        :execute ddl;
+        stop
+    case(dml)
+        :execute dml;
+        :prepare statement;
+        :execute statement;
+        :cursor open;
+        :table open;
+        :page open;
+        :disk read;
+        :output result;
+endswitch
+end
+@enduml
+```
+

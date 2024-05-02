@@ -16,6 +16,27 @@ func setupAndTeardownDBFile() string {
 	return dbPath
 }
 
+func TestDuplicateIDErrorMessage(t *testing.T) {
+	setupAndTeardownDBFile()
+	script := []string{
+		"insert 1 user1 person1@example.com",
+		"insert 1 user1 person1@example.com",
+		"select",
+		".exit",
+	}
+	result := runScript(script)
+	expectedOutput := []string{
+		"db > Executed.",
+		"db > Error: Duplicate key.",
+		"db > (1, user1, person1@example.com)",
+		"Executed.",
+		"db > ",
+	}
+	if !isEqual(result, expectedOutput) {
+		t.Errorf("Expected output: %v, got: %v", expectedOutput, result)
+	}
+}
+
 func TestPrintBTreeStructure(t *testing.T) {
 	setupAndTeardownDBFile()
 	script := []string{
@@ -36,9 +57,9 @@ func TestPrintBTreeStructure(t *testing.T) {
 		"db > Executed.",
 		"db > Tree:",
 		"leaf (size 3)",
-		"  - 0 : 3",
-		"  - 1 : 1",
-		"  - 2 : 2",
+		"  - 0 : 1",
+		"  - 1 : 2",
+		"  - 2 : 3",
 		"db > ",
 	}
 

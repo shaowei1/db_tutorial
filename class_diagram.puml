@@ -1,0 +1,23 @@
+@startuml
+class Pager {
+  - int file_descriptor
+  - uint32_t file_length
+  - uint32_t num_pages
+  - void *pages[TABLE_MAX_PAGES]
+}
+
+class Table {
+  - Pager *pager
+  - uint32_t root_page_num
+}
+
+class Cursor {
+  - Table *table
+  - uint32_t page_num
+  - uint32_t cell_num
+  - bool end_of_table
+}
+
+Table --> Pager
+Cursor --> Table
+@enduml
