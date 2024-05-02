@@ -300,7 +300,7 @@ func runScript(commands []string) []string {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("command execute error:", err)
-		panic(err)
+		// panic(err)
 	}
 
 	// 将输出按行分割并返回
