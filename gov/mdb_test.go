@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
@@ -12,8 +13,53 @@ import (
 // 在测试函数开始前创建数据库文件，在测试结束后删除数据库文件
 func setupAndTeardownDBFile() string {
 	dbPath := createAndRemoveDBFile()
-	defer os.Remove(dbPath)
+	// defer os.Remove(dbPath)
 	return dbPath
+}
+
+func TestBTreeStructurePrinting(t *testing.T) {
+	setupAndTeardownDBFile()
+	var script []string
+	for i := 1; i <= 14; i++ {
+		script = append(script, fmt.Sprintf("insert %d user%d person%d@example.com", i, i, i))
+	}
+	script = append(script, ".btree")
+	script = append(script, "insert 15 user15 person15@example.com")
+	script = append(script, ".exit")
+
+	result := runScript(script)
+
+	expected := []string{
+		"db > Tree:",
+		"- internal (size 1)",
+		"  - leaf (size 7)",
+		"    - 1",
+		"    - 2",
+		"    - 3",
+		"    - 4",
+		"    - 5",
+		"    - 6",
+		"    - 7",
+		"  - key 7",
+		"  - leaf (size 7)",
+		"    - 8",
+		"    - 9",
+		"    - 10",
+		"    - 11",
+		"    - 12",
+		"    - 13",
+		"    - 14",
+		"db > Need to implement searching an internal node",
+		"",
+	}
+
+	startIndex := 14 // Index from where the expected result starts
+	if len(result) < startIndex+len(expected) {
+		t.Errorf("Expected result length is longer than actual result length")
+	}
+	if !isEqual(result[startIndex:], expected) {
+		t.Errorf("Expected output: \n%v, got: \n%v", expected, result[startIndex:])
+	}
 }
 
 func TestDuplicateIDErrorMessage(t *testing.T) {
@@ -56,10 +102,10 @@ func TestPrintBTreeStructure(t *testing.T) {
 		"db > Executed.",
 		"db > Executed.",
 		"db > Tree:",
-		"leaf (size 3)",
-		"  - 0 : 1",
-		"  - 1 : 2",
-		"  - 2 : 3",
+		"- leaf (size 3)",
+		"  - 1",
+		"  - 2",
+		"  - 3",
 		"db > ",
 	}
 
@@ -253,6 +299,7 @@ func runScript(commands []string) []string {
 	// 执行命令
 	err := cmd.Run()
 	if err != nil {
+		fmt.Println("command execute error:", err)
 		panic(err)
 	}
 
@@ -269,10 +316,12 @@ func runScript(commands []string) []string {
 // 检查两个字符串切片是否相等
 func isEqual(a, b []string) bool {
 	if len(a) != len(b) {
+		fmt.Println("len(a):", len(a), "len(b):", len(b))
 		return false
 	}
 	for i := range a {
 		if a[i] != b[i] {
+			fmt.Println("a[i]:", a[i], "b[i]:", b[i])
 			return false
 		}
 	}
