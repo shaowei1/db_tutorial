@@ -279,7 +279,7 @@ func TestTableFullErrorMessage(t *testing.T) {
 // 运行脚本并返回输出结果
 func runScript(commands []string) []string {
 	dbPath := "test.db"
-	cmd := exec.Command("../mdb", dbPath)
+	cmd := exec.Command("./mdb", dbPath)
 
 	// 创建输入输出缓冲区
 	var out bytes.Buffer

@@ -1,7 +1,8 @@
 build_test:
 	gcc mdb.c -o mdb
-	cd gov && \
-	go test -v
+	go test mdb_test.go
+	# go test ./...
+	# cd gov && go test -v
 
 db: db.c
 	gcc db.c -o db
