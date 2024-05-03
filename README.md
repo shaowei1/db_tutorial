@@ -34,3 +34,9 @@ end
 @enduml
 ```
 
+## commands
+
+```bash
+# go test ./...
+# cd gov && go test -v
+```

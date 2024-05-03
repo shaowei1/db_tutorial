@@ -13,7 +13,7 @@ import (
 // 在测试函数开始前创建数据库文件，在测试结束后删除数据库文件
 func setupAndTeardownDBFile() string {
 	dbPath := createAndRemoveDBFile()
-	// defer os.Remove(dbPath)
+	defer os.Remove(dbPath)
 	return dbPath
 }
 
@@ -49,8 +49,8 @@ func TestBTreeStructurePrinting(t *testing.T) {
 		"    - 12",
 		"    - 13",
 		"    - 14",
-		"db > Need to implement searching an internal node",
-		"",
+		"db > Executed.",
+		"db > ",
 	}
 
 	startIndex := 14 // Index from where the expected result starts
@@ -270,9 +270,13 @@ func TestTableFullErrorMessage(t *testing.T) {
 
 	result := runScript(script)
 
-	expectedErrorMessage := "db > Error: Table full."
-	if result[len(result)-2] != expectedErrorMessage {
-		t.Errorf("Expected error message: %s, got: %s", expectedErrorMessage, result[len(result)-2])
+	expectedErrorMessage := []string{
+		"db > Executed.",
+		"db > Need to implement updating parent after split",
+	}
+	result = result[len(result)-2:]
+	if !isEqual(result, expectedErrorMessage) {
+		t.Errorf("Expected error message: %s, got: %s", expectedErrorMessage, result)
 	}
 }
 
@@ -321,7 +325,7 @@ func isEqual(a, b []string) bool {
 	}
 	for i := range a {
 		if a[i] != b[i] {
-			fmt.Println("a[i]:", a[i], "b[i]:", b[i])
+			fmt.Println("a[", i, "]:", a[i], "b[", i, "]:", b[i])
 			return false
 		}
 	}
