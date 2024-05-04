@@ -383,11 +383,11 @@ void leaf_node_split_and_insert(Cursor *cursor, uint32_t key, Row *value) {
   Insert the new value in one of the two nodes.
   Update parent or create a new parent.
   */
-  void *old_node = get_page(cursor->table->pager, cursor->page_num);
+  void *old_node = get_page(cursor->table->pager, cursor->page_num); // low half
   uint32_t new_page_num = get_unused_page_num(cursor->table->pager);
-  void *new_node = get_page(cursor->table->pager, new_page_num);
+  void *new_node = get_page(cursor->table->pager, new_page_num); // high half
   initialize_leaf_node(new_node);
-  *leaf_node_next_leaf(new_node) = *leaf_node_next_leaf(old_node);
+  *leaf_node_next_leaf(new_node) = *leaf_node_next_leaf(old_node); // linkInsert
   *leaf_node_next_leaf(old_node) = new_page_num;
   /*
     All existing keys plus new key should be divided
