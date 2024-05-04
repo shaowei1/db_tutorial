@@ -1,6 +1,7 @@
 db
 mdb
 *.db
+nohup.out
 _site/
 TODO
 example

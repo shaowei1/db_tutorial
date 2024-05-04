@@ -13,12 +13,13 @@ import (
 // 在测试函数开始前创建数据库文件，在测试结束后删除数据库文件
 func setupAndTeardownDBFile() string {
 	dbPath := createAndRemoveDBFile()
-	defer os.Remove(dbPath)
+	defer os.Remove(dbPath) // not executed
 	return dbPath
 }
 
 func TestBTreeStructurePrinting(t *testing.T) {
 	setupAndTeardownDBFile()
+
 	var script []string
 	for i := 1; i <= 14; i++ {
 		script = append(script, fmt.Sprintf("insert %d user%d person%d@example.com", i, i, i))
@@ -130,9 +131,9 @@ func TestPrintConstants(t *testing.T) {
 		"db > Constants:",
 		"ROW_SIZE: 293",
 		"COMMON_NODE_HEADER_SIZE: 6",
-		"LEAF_NODE_HEADER_SIZE: 10",
+		"LEAF_NODE_HEADER_SIZE: 14",
 		"LEAF_NODE_CELL_SIZE: 297",
-		"LEAF_NODE_SPACE_FOR_CELLS: 4086",
+		"LEAF_NODE_SPACE_FOR_CELLS: 4082",
 		"LEAF_NODE_MAX_CELLS: 13",
 		"db > ",
 	}

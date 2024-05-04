@@ -16,3 +16,6 @@ test: db
 
 format: *.c
 	clang-format -style=Google -i *.c
+
+serve:
+	nohup bundle exec jekyll serve &
